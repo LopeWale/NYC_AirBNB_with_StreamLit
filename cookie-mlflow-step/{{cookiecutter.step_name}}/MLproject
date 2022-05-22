@@ -6,7 +6,7 @@ entry_points:
     parameters:
 {% for arg_name in cookiecutter.parameters.split(",") %}
       {{arg_name}}:
-        description: ## ADD DESCRIPTION
+        description: This will create your cookiecutter component
         type: string
 {% endfor %}
 

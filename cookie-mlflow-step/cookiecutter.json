@@ -4,5 +4,5 @@
 	"job_type": "my_step",
 	"short_description": "My step",
 	"long_description": "An example of a step using MLflow and Weights & Biases",
-	"parameters": "parameter1,parameter2"
+	"parameters": "input_artifact, output_artifact, output_type, output_description, min_price, max_price"
 }

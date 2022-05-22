@@ -11,3 +11,5 @@ dependencies:
   - pyarrow=2.0
   - pip:
       - wandb==0.10.31
+      - streamlit==1.9.0
+      - streamlit-pandas-profiling==0.1.3

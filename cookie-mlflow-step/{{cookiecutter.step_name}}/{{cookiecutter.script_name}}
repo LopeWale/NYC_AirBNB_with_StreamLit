@@ -4,6 +4,8 @@
 """
 import argparse
 import logging
+from argparse import ArgumentParser
+
 import wandb
 
 
@@ -11,33 +13,51 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
-def go(args):
+def go(args) -> object:
 
     run = wandb.init(job_type="{{cookiecutter.job_type}}")
     run.config.update(args)
+    logger.info("Download input artifact and log that this script is using this particular version of the artifact")
 
-    # Download input artifact. This will also log that this script is using this
-    # particular version of the artifact
-    # artifact_local_path = run.use_artifact(args.input_artifact).file()
+    local_path = wandb.use_artifact(args.input_artifact).file()
+    df = pd.read_csv(local_path)
 
-    ######################
-    # YOUR CODE HERE     #
-    ######################
+    # Drop outliers
+    try:
+        min_price = args.min_price
+        max_price = args.max_price
+        idx = df['price'].between(min_price, max_price)
+    except TypeError:
+        logger.error("make sure that the min and max price are a Float type")
+    else:
+        idx = df['price'].between(float(min_price), float(max_price))
+    finally:
+        df = df[idx].copy()
+        # Convert last_review to datetime
+        df['last_review'] = pd.to_datetime(df['last_review'])
+    df.to_csv(args.output_artifact, index=False)
+
+    artifact = wandb.Artifact(
+        args.output_artifact,
+        type=args.output_type,
+        description=args.output_description,
+    )
+    artifact.add_file("clean_sample.csv")
+    run.log_artifact(artifact)
 
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="{{cookiecutter.short_description}}")
+    parser: ArgumentParser = argparse.ArgumentParser(description="{{cookiecutter.short_description}}")
 
 {% for arg_name in cookiecutter.parameters.split(",") %}
     parser.add_argument(
-        "--{{arg_name}}", 
-        type=## INSERT TYPE HERE: str, float or int,
-        help=## INSERT DESCRIPTION HERE,
-        required=True
-    )
+        "--{{arg_name}}",
+        type=[str,float],
+        help="this is the name of the component",
+        required=True)
 {% endfor %}
 
     args = parser.parse_args()
-
     go(args)
+
