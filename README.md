@@ -38,7 +38,8 @@ and click on `Fork` in the upper right corner. This will create a fork in your G
 repository that is under your control. Now clone the repository locally so you can start working on it:
 
 ```
-git clone https://github.com/[your github username]/build-model-workflow-starter.git
+git clone https://github.com/[your github username]/NYC_AirBNB_with_StreamLit
+
 ```
 
 and go into the repository:
